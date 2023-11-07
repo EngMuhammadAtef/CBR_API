@@ -16,6 +16,17 @@ class DB_Recommendations:
 
         # Connect to collection
         self.__collection = self.__db['recommendations']
+        
+    def insert_RecoList(self, nationalId:int, IDs_list: list, Scores_list: list):
+        """
+            insert recommendation list of user
+
+            Parameters
+            nationalId -> nationalId of user that you want to update his content
+            recom_list [list] -> list of recommended users' IDs list
+        """
+        response = self.__collection.update_one( {'nationalId': nationalId}, {'$set': {'userRecommendations':[{'nationalId': IDs_list[i], 'score':Scores_list[i]} for i in range(len(IDs_list))]}})
+
 
     def get_all_content(self):
         """

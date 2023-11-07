@@ -38,5 +38,8 @@ def get_recomendation(nationalId: str):
     users_nationalIDs = [i[0] for i in sim_scores]
     users_scores = [round(i[1]*100, 1) for i in sim_scores]
 
+    # save user in database
+    rec_db.insert_RecoList(nationalId, users_nationalIDs, users_scores)
+
     # Return first 15 users idx and scores
     return users_nationalIDs, users_scores
