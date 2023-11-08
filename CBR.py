@@ -10,19 +10,19 @@ def get_recomendation(nationalId: str):
 
     # importing libraries
     from sklearn.feature_extraction.text import TfidfVectorizer
-    from sklearn.metrics.pairwise import cosine_similarity
+    from sklearn.metrics.pairwise import linear_kernel # cosine_similarity [same but slower method] # k(x,y) = xT.y <TfidfVectorizer returns normalized victors> 
     from DB import DB_Recommendations
 
     # connect to database and access recommendations collection
     rec_db = DB_Recommendations()
 
-    # get all national IDs & content of all users
-    NIDs, bag_of_content = rec_db.get_all_content()
+    # get all national IDs & content of all available users
+    NIDs, bag_of_content = rec_db.get_all_content_for_available_users()
 
     # compute similarity between new content and users_content
     tfidf = TfidfVectorizer(stop_words='english')
     tfidf_matrix = tfidf.fit_transform(bag_of_content)
-    cosine_sim = cosine_similarity(tfidf_matrix, tfidf_matrix)
+    cosine_sim = linear_kernel(tfidf_matrix, tfidf_matrix)
     cosine_sim = {id:cos for id, cos in zip(NIDs, cosine_sim)}
 
     # Get the pairwsie similarity scores of all users_content with that content
@@ -39,7 +39,7 @@ def get_recomendation(nationalId: str):
     users_scores = [round(i[1]*100, 1) for i in sim_scores]
 
     # save user in database
-    rec_db.insert_RecoList(nationalId, users_nationalIDs, users_scores)
+    rec_db.Update_Recom_List(nationalId, users_nationalIDs, users_scores)
 
     # Return first 10 users idx and scores
     return users_nationalIDs, users_scores
@@ -51,19 +51,19 @@ def Update_All_Recommendations():
 
     # importing libraries
     from sklearn.feature_extraction.text import TfidfVectorizer
-    from sklearn.metrics.pairwise import cosine_similarity
+    from sklearn.metrics.pairwise import linear_kernel # cosine_similarity [same but slower method] # k(x,y) = xT.y <TfidfVectorizer returns normalized victors> 
     from DB import DB_Recommendations
 
     # connect to database and access recommendations collection
     rec_db = DB_Recommendations()
 
     # get all national IDs & content of all users
-    NIDs, bag_of_content = rec_db.get_all_content()
+    NIDs, bag_of_content = rec_db.get_all_content_for_available_users()
 
     # compute similarity between new content and users_content
     tfidf = TfidfVectorizer(stop_words='english')
     tfidf_matrix = tfidf.fit_transform(bag_of_content)
-    cosine_sim = cosine_similarity(tfidf_matrix, tfidf_matrix)
+    cosine_sim = linear_kernel(tfidf_matrix, tfidf_matrix)
     cosine_sim = {id:cos for id, cos in zip(NIDs, cosine_sim)}
 
     # update for every user
@@ -82,6 +82,6 @@ def Update_All_Recommendations():
         users_scores = [round(i[1]*100, 1) for i in sim_scores]
 
         # save user in database
-        rec_db.insert_RecoList(nationalId, users_nationalIDs, users_scores)
+        rec_db.Update_Recom_List(nationalId, users_nationalIDs, users_scores)
 
     print("Updated All Recommendation lists Successfully")

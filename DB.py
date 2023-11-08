@@ -17,7 +17,7 @@ class DB_Recommendations:
         # Connect to collection
         self.__collection = self.__db['recommendations']
         
-    def insert_RecoList(self, nationalId:str, IDs_list: list, Scores_list: list):
+    def Update_Recom_List(self, nationalId:str, IDs_list: list, Scores_list: list):
         """
             insert recommendation list of user
 
@@ -28,15 +28,24 @@ class DB_Recommendations:
         """
         response = self.__collection.update_one( {'nationalId': nationalId}, {'$set': {'userRecommendations':[{'nationalId': IDs_list[i], 'score':Scores_list[i]} for i in range(len(IDs_list))]}})
 
-    def get_all_content(self):
+    def get_all_available_IDs(self):
+        # Connect to users collection
+        self.__users = self.__db['users']
+        users = self.__users.find({"partnerId":None})
+        NIDs = []
+        for user in users:
+            NIDs.append(user['nationalId'])
+        return NIDs
+
+    def get_all_content_for_available_users(self):
         """
-            find all content in recommendations collection
+            find all content for available users in recommendations collection
 
             Return
             IDs, contents -> id and content for all users
         """
         # find all of users
-        users = self.__collection.find()
+        users = self.__collection.find({"nationalId": {"$in": self.get_all_available_IDs()}})
         IDs, contents = [], []
 
         for user in users:
@@ -44,4 +53,3 @@ class DB_Recommendations:
             contents.append( ' '.join([user['fieldOfStudy'], user['specialization'], ' '.join(content['skillName'] for content in user['userSkills'])]) )
         
         return IDs, contents
-    
