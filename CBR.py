@@ -28,17 +28,20 @@ def get_recomendation(nationalId: str):
     # Get the pairwsie similarity scores of all users_content with that content
     sim_scores = list(zip(NIDs, cosine_sim[nationalId])) # [[1, 0.44], [2, 0.52], ...]
 
-    # Sort all the users_content based on the similarity scores DESC
-    sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True) # [[2, 0.52], [1, 0.44], ...]
+    # Sort first 10 based on similarity scores [DESC]
+    for i in range(11): # number of recommendation users[10]
+        for j in range(len(sim_scores)-1, i, -1):
+            if sim_scores[j][1]>sim_scores[j-1][1]:
+                sim_scores[j], sim_scores[j-1] = sim_scores[j-1], sim_scores[j]
     
-    # Get the scores of the 5 most similar content
+    # Get the scores of the 10 most similar content
     sim_scores = sim_scores[1:11]
 
-    # Get the users indices
-    users_nationalIDs = [i[0] for i in sim_scores]
-    users_scores = [round(i[1]*100, 1) for i in sim_scores]
-
-    # save user in database
+    # Get the users indices and scores
+    users_nationalIDs = [a[0] for a in sim_scores]
+    users_scores = [round(a[1]*100, 1) for a in sim_scores]
+    
+    # save recommendations in database
     rec_db.Update_Recom_List(nationalId, users_nationalIDs, users_scores)
 
     # Return first 10 users idx and scores
@@ -71,15 +74,18 @@ def Update_All_Recommendations():
         # Get the pairwsie similarity scores of all users_content with that content
         sim_scores = list(zip(NIDs, cosine_sim[nationalId])) # [[1, 0.44], [2, 0.52], ...]
 
-        # Sort all the users_content based on the similarity scores DESC
-        sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True) # [[2, 0.52], [1, 0.44], ...]
+        # Sort first 10 based on similarity scores [DESC]
+        for i in range(11): # number of recommendation users[10]
+            for j in range(len(sim_scores)-1, i, -1):
+                if sim_scores[j][1]>sim_scores[j-1][1]:
+                    sim_scores[j], sim_scores[j-1] = sim_scores[j-1], sim_scores[j]
         
-        # Get the scores of the 5 most similar content
+        # Get the scores of the 10 most similar content
         sim_scores = sim_scores[1:11]
 
-        # Get the users indices
-        users_nationalIDs = [i[0] for i in sim_scores]
-        users_scores = [round(i[1]*100, 1) for i in sim_scores]
+        # Get the users indices and scores
+        users_nationalIDs = [a[0] for a in sim_scores]
+        users_scores = [round(a[1]*100, 1) for a in sim_scores]
 
         # save user in database
         rec_db.Update_Recom_List(nationalId, users_nationalIDs, users_scores)
