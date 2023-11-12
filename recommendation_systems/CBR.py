@@ -10,6 +10,7 @@ def get_recomendation(db, nationalId: str):
         recommend me users with computing similarity scores between my content and other users' content
 
         Parameters
+        db -> DataBase
         nationalId [str] -> nationalId of existing user to get content and compute similarity scores to users_content
 
         NIDs, bag_of_content -> getting IDs and all content of users
@@ -51,6 +52,9 @@ def get_recomendation(db, nationalId: str):
 def Update_All_Recommendations(db):
     """
         Update All Recommendation lists for all users with computing similarity scores
+        
+        Parameters
+        db -> DataBase
     """
 
     # get all national IDs & content of all available users

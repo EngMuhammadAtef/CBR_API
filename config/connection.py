@@ -1,6 +1,6 @@
 def connect_to_db():
     """
-        Connect to database and get access for recommendations collection
+        Connect to database on cloud
     """
     # import MongoDB Client
     from pymongo.mongo_client import MongoClient
