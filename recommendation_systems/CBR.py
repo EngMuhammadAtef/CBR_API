@@ -1,23 +1,24 @@
-def get_recomendation(nationalId: str):
+# importing libraries
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import linear_kernel # cosine_similarity [same but slower method] # k(x,y) = xT.y <TfidfVectorizer returns normalized victors> 
+from crud_operations import crud
+import sys
+sys.path.append("..") # Adds higher directory to python modules path.
+
+def get_recomendation(db, nationalId: str):
     """
         recommend me users with computing similarity scores between my content and other users' content
 
         Parameters
         nationalId [str] -> nationalId of existing user to get content and compute similarity scores to users_content
 
+        NIDs, bag_of_content -> getting IDs and all content of users
+
         return users_nationalIDs, users_scores           [first 10 user' IDs and scores that similar to me]
     """
 
-    # importing libraries
-    from sklearn.feature_extraction.text import TfidfVectorizer
-    from sklearn.metrics.pairwise import linear_kernel # cosine_similarity [same but slower method] # k(x,y) = xT.y <TfidfVectorizer returns normalized victors> 
-    from DB import DB_Recommendations
-
-    # connect to database and access recommendations collection
-    rec_db = DB_Recommendations()
-
     # get all national IDs & content of all available users
-    NIDs, bag_of_content = rec_db.get_all_content_for_available_users()
+    NIDs, bag_of_content = crud.get_all_content_for_available_users(db)
 
     # compute similarity between new content and users_content
     tfidf = TfidfVectorizer(stop_words='english')
@@ -42,26 +43,18 @@ def get_recomendation(nationalId: str):
     users_scores = [round(a[1]*100, 1) for a in sim_scores]
     
     # save recommendations in database
-    rec_db.Update_Recom_List(nationalId, users_nationalIDs, users_scores)
+    crud.Update_Recom_List(db, nationalId, users_nationalIDs, users_scores)
 
     # Return first 10 users idx and scores
     return users_nationalIDs, users_scores
 
-def Update_All_Recommendations():
+def Update_All_Recommendations(db):
     """
         Update All Recommendation lists for all users with computing similarity scores
     """
 
-    # importing libraries
-    from sklearn.feature_extraction.text import TfidfVectorizer
-    from sklearn.metrics.pairwise import linear_kernel # cosine_similarity [same but slower method] # k(x,y) = xT.y <TfidfVectorizer returns normalized victors> 
-    from DB import DB_Recommendations
-
-    # connect to database and access recommendations collection
-    rec_db = DB_Recommendations()
-
-    # get all national IDs & content of all users
-    NIDs, bag_of_content = rec_db.get_all_content_for_available_users()
+    # get all national IDs & content of all available users
+    NIDs, bag_of_content = crud.get_all_content_for_available_users(db)
 
     # compute similarity between new content and users_content
     tfidf = TfidfVectorizer(stop_words='english')
@@ -88,6 +81,6 @@ def Update_All_Recommendations():
         users_scores = [round(a[1]*100, 1) for a in sim_scores]
 
         # save user in database
-        rec_db.Update_Recom_List(nationalId, users_nationalIDs, users_scores)
+        crud.Update_Recom_List(db, nationalId, users_nationalIDs, users_scores)
 
     print("Updated All Recommendation lists Successfully")
