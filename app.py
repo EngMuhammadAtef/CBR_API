@@ -1,14 +1,18 @@
 # importing libraries
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_apscheduler import APScheduler
+
+from models.OCR_script import get_nationalId
 from recommendation_systems.CBR import get_recomendation, Update_All_Recommendations
 from config.connection import connect_to_db
+
 
 # inial flask object
 app = Flask(__name__)
 
 # connect to database
 db = connect_to_db()
+
 
 # get recomendation API
 @app.route('/nationalId=<nationalId>') 
@@ -23,8 +27,26 @@ def home(nationalId):
             res.append({'nationalId': id, 'score': score})
         return jsonify(res)
     
-    except:
-        return jsonify()
+    except Exception as e:
+        return jsonify({"error":str(e)}), 500
+
+
+# extract nationalId API
+@app.route('/extract_nationalId', methods=['POST'])
+def extract_nationalId():
+    # Check if the request contains a file
+    if 'file' not in request.files:
+        return jsonify({'error': 'No file provided'}), 400
+
+    file = request.files['file']
+
+    # Check if the file is empty
+    if file.filename == '':
+        return jsonify({'error': 'Empty file name'}), 400
+
+    # extract nationalId from image
+    nationalId = get_nationalId(file)
+    return jsonify({'nationalId': nationalId})
 
 
 # run main file [app]
