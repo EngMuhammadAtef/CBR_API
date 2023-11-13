@@ -4,6 +4,9 @@ def get_nationalId(file):
     from pytesseract import pytesseract
     import numpy as np
 
+    # Defining paths to tesseract.exe
+    pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+
     # Pre-Processing Image
     img = cv2.imdecode(np.fromstring(file.read(), np.uint8), cv2.IMREAD_UNCHANGED)
     resized_img = cv2.resize(img, (712, 512), interpolation=cv2.INTER_AREA)
