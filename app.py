@@ -17,7 +17,7 @@ db = connect_to_db()
 # get recomendation API
 @app.route('/nationalId=<nationalId>') 
 def home(nationalId):
-    try:        
+    try:
         # get content-based recomendation for user content and other users' content
         users_nationalIDs, users_scores = get_recomendation(db, str(nationalId))
         
@@ -28,25 +28,29 @@ def home(nationalId):
         return jsonify(res)
     
     except Exception as e:
-        return jsonify({"error":str(e)}), 500
+        return jsonify({"error":str(e)})
 
 
 # extract nationalId API
 @app.route('/extract_nationalId', methods=['POST'])
 def extract_nationalId():
-    # Check if the request contains a file
-    if 'file' not in request.files:
-        return jsonify({'error': 'No file provided'}), 400
+    try:
+        # Check if the request contains a file
+        if 'file' not in request.files:
+            return jsonify({'error': 'No file provided'}), 400
 
-    file = request.files['file']
+        file = request.files['file']
 
-    # Check if the file is empty
-    if file.filename == '':
-        return jsonify({'error': 'Empty file name'}), 400
+        # Check if the file is empty
+        if file.filename == '':
+            return jsonify({'error': 'Empty file name'}), 400
 
-    # extract nationalId from image
-    nationalId = get_nationalId(file)
-    return jsonify({'nationalId': nationalId})
+        # extract nationalId from image
+        nationalId = get_nationalId(file)
+        return jsonify({'nationalId': nationalId})
+    
+    except Exception as e:
+        return jsonify({"error":str(e)})
 
 
 # run main file [app]

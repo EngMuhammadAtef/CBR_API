@@ -3,9 +3,10 @@ def get_nationalId(file):
     import cv2
     from pytesseract import pytesseract
     import numpy as np
+    import os
+    dir_path = os.path.dirname(os.path.realpath(__file__))
 
-    # Defining paths to tesseract.exe
-    pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+    pytesseract.tesseract_cmd = dir_path + r"\Tesseract-OCR\tesseract.exe"
 
     # Pre-Processing Image
     img = cv2.imdecode(np.fromstring(file.read(), np.uint8), cv2.IMREAD_UNCHANGED)
@@ -19,6 +20,7 @@ def get_nationalId(file):
     nationalId = ''.join(c for c in obj if c.isdigit())[:14]
 
     return nationalId
+
 
 # testing post request with commend
 # curl -X POST -F "file=@\"D:\WORK Space\GRADAUTION PROJECT\Extracting User Info From National ID\dataset\0.JPG\"" http://localhost:5000/extract_nationalId
