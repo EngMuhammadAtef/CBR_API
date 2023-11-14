@@ -6,7 +6,7 @@ def get_nationalId(file):
     import os
     dir_path = os.path.dirname(os.path.realpath(__file__))
 
-    pytesseract.tesseract_cmd = dir_path + r"\Tesseract-OCR\tesseract.exe"
+    pytesseract.tesseract_cmd = dir_path + "/Tesseract-OCR/tesseract.exe"
 
     # Pre-Processing Image
     img = cv2.imdecode(np.fromstring(file.read(), np.uint8), cv2.IMREAD_UNCHANGED)
