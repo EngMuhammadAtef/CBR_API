@@ -1,8 +1,5 @@
 gunicorn
 Flask
 Flask-APScheduler
-numpy
 pymongo
 scikit-learn
-easyocr
-opencv-python
