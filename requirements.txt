@@ -4,5 +4,5 @@ Flask-APScheduler
 numpy
 pymongo
 scikit-learn
-pytesseract
+easyocr
 opencv-python

@@ -48,7 +48,7 @@ def extract_nationalId():
         # extract nationalId from image
         nationalId = get_nationalId(file)
         return jsonify({'nationalId': nationalId})
-    
+
     except Exception as e:
         return jsonify({"error":str(e)})
 
