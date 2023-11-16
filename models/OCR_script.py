@@ -5,7 +5,7 @@ def get_nationalId(file):
     from pytesseract import pytesseract
     import os 
     dir_path = os.path.dirname(os.path.realpath(__file__))
-    os.environ['TESSDATA_PREFIX'] = dir_path + r'\ara_number.traineddata'
+    os.environ['TESSDATA_PREFIX'] = r'/app/models'
 
     # Pre-Processing Image
     img = cv2.imdecode(np.fromstring(file.read(), np.uint8), cv2.IMREAD_UNCHANGED)
