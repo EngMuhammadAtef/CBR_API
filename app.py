@@ -37,20 +37,23 @@ def extract_nationalId():
     try:
         # Check if the request contains a file
         if 'file' not in request.files:
-            return jsonify({'error': 'No file provided'}), 400
+            return jsonify({'status':False, 'message': 'image is required'}), 400
 
         file = request.files['file']
 
         # Check if the file is empty
         if file.filename == '':
-            return jsonify({'error': 'Empty file name'}), 400
+            return jsonify({'status':False,'message': 'image is required'}), 400
 
         # extract nationalId from image
         nationalId = get_nationalId(file)
-        return jsonify({'nationalId': nationalId})
-
+        if len(nationalId)>=10:
+            return jsonify({'status':True, 'nationalId': nationalId})
+        
+        return jsonify({'status':False, 'message':"couldn't extract nationalId"}), 400
+    
     except Exception as e:
-        return jsonify({"error":str(e)})
+        return jsonify({'status':False, 'message':str(e)})
 
 
 # run main file [app]
