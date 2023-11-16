@@ -20,7 +20,7 @@ def get_nationalId(file):
         if char.isdigit():
             nationalId += char
 
-    return nationalId
+    return nationalId[:14]
 
 
 # testing post request with commends 
