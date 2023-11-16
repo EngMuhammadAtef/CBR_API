@@ -14,8 +14,12 @@ def get_nationalId(file):
     gray_img = cv2.cvtColor(cropped_img, cv2.COLOR_BGR2GRAY)
     remove_bg_img = cv2.adaptiveThreshold(gray_img, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 21, 16)
 
-    string = pytesseract.image_to_string(remove_bg_img, lang='ara_number', config='--psm 7')
-    nationalId = all(char.isdigit() for char in string)        
+    obj = pytesseract.image_to_string(remove_bg_img, lang='ara_number', config='--psm 7')
+    nationalId = ''
+    for char in obj:
+        if char.isdigit():
+            nationalId += char
+
     return nationalId
 
 
