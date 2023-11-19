@@ -33,6 +33,5 @@ def get_all_content_for_available_users(db):
 
     for user in users:
         IDs.append(user['nationalId'])
-        contents.append( ' '.join([user['fieldOfStudy'], user['specialization'], ' '.join(content['skillName'] for content in user['userSkills'])]) )
-    
+        contents.append(' '.join([ user['fieldOfStudy'], user['specialization'], ''.join((content['skillName']+' ')*content['skillRate'] for content in user['userSkills']) ]))
     return IDs, contents
