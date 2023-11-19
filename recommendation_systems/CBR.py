@@ -37,7 +37,7 @@ def get_recomendation(db, nationalId: str):
                 sim_scores[j], sim_scores[j-1] = sim_scores[j-1], sim_scores[j]
     
     # Get the scores of the 10 most similar content
-    sim_scores = sim_scores[1:11]
+    sim_scores = [ elm for elm in sim_scores if elm[0] != nationalId ]
 
     # Get the users indices and scores
     users_nationalIDs = [a[0] for a in sim_scores]
@@ -78,7 +78,7 @@ def Update_All_Recommendations(db):
                     sim_scores[j], sim_scores[j-1] = sim_scores[j-1], sim_scores[j]
         
         # Get the scores of the 10 most similar content
-        sim_scores = sim_scores[1:11]
+        sim_scores = [ elm for elm in sim_scores if elm[0] != nationalId ]
 
         # Get the users indices and scores
         users_nationalIDs = [a[0] for a in sim_scores]
