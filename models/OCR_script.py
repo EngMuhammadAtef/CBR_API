@@ -1,24 +1,42 @@
+# import libraries
+import cv2
+import numpy as np
+from pytesseract import image_to_string
+import os
+
+os.environ['TESSDATA_PREFIX'] = r'/app/models'
+
+# config settings
+RESIZE_WIDTH = 712
+RESIZE_HEIGHT = 512
+CONFIG = '--psm 7'
+LANG = 'ara_number'
+
+
 def get_nationalId(file):
-    # import libraries
-    import cv2
-    import numpy as np
-    from pytesseract import pytesseract
-    import os 
-    dir_path = os.path.dirname(os.path.realpath(__file__))
-    os.environ['TESSDATA_PREFIX'] = r'/app/models'
+    """
+        Extracts a 14-digit national ID from the input image file.
+
+        Parameters:
+            file (file): Input image file.
+
+        Returns:
+            str: Extracted 14-digit national ID.
+    """
+
+    # Read the image
+    gray_img = cv2.imdecode(np.frombuffer(file.read(), np.uint8), cv2.IMREAD_GRAYSCALE)
 
     # Pre-Processing Image
-    img = cv2.imdecode(np.fromstring(file.read(), np.uint8), cv2.IMREAD_UNCHANGED)
-    resized_img = cv2.resize(img, (712, 512), interpolation=cv2.INTER_AREA)
+    resized_img = cv2.resize(gray_img, (RESIZE_WIDTH, RESIZE_HEIGHT), interpolation=cv2.INTER_AREA)
     cropped_img = resized_img[resized_img.shape[0]*-7//24:resized_img.shape[0]*-1//10, resized_img.shape[1]*3//-5:]
-    gray_img = cv2.cvtColor(cropped_img, cv2.COLOR_BGR2GRAY)
-    remove_bg_img = cv2.adaptiveThreshold(gray_img, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 21, 16)
+    removed_bg_img = cv2.adaptiveThreshold(cropped_img, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 21, 16)
 
-    obj = pytesseract.image_to_string(remove_bg_img, lang='ara_number', config='--psm 7')
-    nationalId = ''
-    for char in obj:
-        if char.isdigit():
-            nationalId += char
+    # Extract nationalId from image
+    string = image_to_string(removed_bg_img, lang=LANG, config=CONFIG)
+
+    # Extract digits
+    nationalId = ''.join(n for n in string if n.isdigit())
 
     return nationalId[:14]
 
