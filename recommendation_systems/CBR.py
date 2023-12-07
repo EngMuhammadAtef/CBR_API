@@ -19,7 +19,7 @@ def get_recomendation(db, nationalId: str, n_of_recomendation=10):
     """
 
     # get all national IDs & content of all available users
-    NIDs, bag_of_content = crud.get_all_content_for_available_users(db)
+    NIDs, bag_of_content = crud.get_all_content_for_available_users(db, nationalId)
 
     # compute similarity between new content and users_content
     tfidf = TfidfVectorizer()
