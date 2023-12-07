@@ -13,25 +13,27 @@ def Update_Recom_List(db, nationalId:str, IDs_list: list, Scores_list: list):
 def get_all_available_IDs(db):
     # Connect to users collection
     collection = db['users']
-    users = collection.find({"partnerId":None})
+    users = collection.find({"isAvailable":True})
     NIDs = []
     for user in users:
         NIDs.append(user['nationalId'])
     return NIDs
 
-def get_all_content_for_available_users(db):
+def get_all_content_for_available_users(db, nationalId=''):
     """
         find all content for available users in recommendations collection
 
         Return
         IDs, contents -> id and content for all users
     """
-    # find all of users
     collection = db['recommendations']
-    users = collection.find({"nationalId": {"$in": get_all_available_IDs(db)}})
+    user_field = collection.find({"nationalId":nationalId})['fieldOfStudy'] if nationalId else ''
+    
+    users = collection.find({"nationalId": {"$in": get_all_available_IDs(db)}, "fieldOfStudy":user_field}) if user_field else collection.find({"nationalId": {"$in": get_all_available_IDs(db)}})
     IDs, contents = [], []
 
     for user in users:
         IDs.append(user['nationalId'])
         contents.append(' '.join([ user['fieldOfStudy'], user['specialization'], ''.join((content['skillName']+' ')*content['skillRate'] for content in user['userSkills']) ]))
     return IDs, contents
+
