@@ -61,7 +61,7 @@ def Update_All_Recommendations(db, n_of_recomendation=10):
     NIDs, bag_of_content = crud.get_all_content_for_available_users(db)
 
     # compute similarity between new content and users_content
-    tfidf = TfidfVectorizer(stop_words='english')
+    tfidf = TfidfVectorizer()
     tfidf_matrix = tfidf.fit_transform(bag_of_content)
     cosine_sim = linear_kernel(tfidf_matrix, tfidf_matrix)
     cosine_sim = {id:cos for id, cos in zip(NIDs, cosine_sim)}
