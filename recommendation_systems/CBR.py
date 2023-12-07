@@ -5,7 +5,7 @@ from crud_operations import crud
 import sys
 sys.path.append("..") # Adds higher directory to python modules path.
 
-def get_recomendation(db, nationalId: str):
+def get_recomendation(db, nationalId: str, n_of_recomendation=10):
     """
         recommend me users with computing similarity scores between my content and other users' content
 
@@ -22,7 +22,7 @@ def get_recomendation(db, nationalId: str):
     NIDs, bag_of_content = crud.get_all_content_for_available_users(db)
 
     # compute similarity between new content and users_content
-    tfidf = TfidfVectorizer(stop_words='english')
+    tfidf = TfidfVectorizer()
     tfidf_matrix = tfidf.fit_transform(bag_of_content)
     cosine_sim = linear_kernel(tfidf_matrix, tfidf_matrix)
     cosine_sim = {id:cos for id, cos in zip(NIDs, cosine_sim)}
@@ -37,7 +37,7 @@ def get_recomendation(db, nationalId: str):
                 sim_scores[j], sim_scores[j-1] = sim_scores[j-1], sim_scores[j]
     
     # Get the scores of the 10 most similar content
-    sim_scores = [ elm for elm in sim_scores if elm[0] != nationalId ]
+    sim_scores = [ elm for elm in sim_scores[:n_of_recomendation+1] if elm[0] != nationalId ]
 
     # Get the users indices and scores
     users_nationalIDs = [a[0] for a in sim_scores]
@@ -49,7 +49,7 @@ def get_recomendation(db, nationalId: str):
     # Return first 10 users idx and scores
     return users_nationalIDs, users_scores
 
-def Update_All_Recommendations(db):
+def Update_All_Recommendations(db, n_of_recomendation=10):
     """
         Update All Recommendation lists for all users with computing similarity scores
         
@@ -78,7 +78,7 @@ def Update_All_Recommendations(db):
                     sim_scores[j], sim_scores[j-1] = sim_scores[j-1], sim_scores[j]
         
         # Get the scores of the 10 most similar content
-        sim_scores = [ elm for elm in sim_scores if elm[0] != nationalId ]
+        sim_scores = [ elm for elm in sim_scores[:n_of_recomendation+1] if elm[0] != nationalId ]
 
         # Get the users indices and scores
         users_nationalIDs = [a[0] for a in sim_scores]
