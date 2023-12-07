@@ -31,7 +31,7 @@ def get_recomendation(db, nationalId: str, n_of_recomendation=10):
     sim_scores = list(zip(NIDs, cosine_sim[nationalId])) # [[1, 0.44], [2, 0.52], ...]
 
     # Sort first 10 based on similarity scores [DESC]
-    for i in range(11): # number of recommendation users[10]
+    for i in range(n_of_recomendation+1): # number of recommendation users[10]
         for j in range(len(sim_scores)-1, i, -1):
             if sim_scores[j][1]>sim_scores[j-1][1]:
                 sim_scores[j], sim_scores[j-1] = sim_scores[j-1], sim_scores[j]
@@ -72,7 +72,7 @@ def Update_All_Recommendations(db, n_of_recomendation=10):
         sim_scores = list(zip(NIDs, cosine_sim[nationalId])) # [[1, 0.44], [2, 0.52], ...]
 
         # Sort first 10 based on similarity scores [DESC]
-        for i in range(11): # number of recommendation users[10]
+        for i in range(n_of_recomendation+1): # number of recommendation users[10]
             for j in range(len(sim_scores)-1, i, -1):
                 if sim_scores[j][1]>sim_scores[j-1][1]:
                     sim_scores[j], sim_scores[j-1] = sim_scores[j-1], sim_scores[j]
