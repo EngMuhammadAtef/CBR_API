@@ -19,7 +19,7 @@ db = connect_to_db()
 def home(nationalId):
     try:
         # get content-based recomendation for user content and other users' content
-        users_nationalIDs, users_scores = get_recomendation(db, f"{nationalId}")
+        users_nationalIDs, users_scores = get_recomendation(db, str(nationalId))
         
         # format IDs and Scores for API Server
         res = []

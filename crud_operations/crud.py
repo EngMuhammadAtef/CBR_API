@@ -13,7 +13,7 @@ def Update_Recom_List(db, nationalId:str, IDs_list: list, Scores_list: list):
 def get_all_available_IDs(db):
     # Connect to users collection
     collection = db['users']
-    users = collection.find({"isAvailable":True})
+    users = collection.find({"partnerId":None})
     NIDs = []
     for user in users:
         NIDs.append(user['nationalId'])
