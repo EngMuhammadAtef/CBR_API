@@ -28,8 +28,8 @@ def get_all_content_for_available_users(db, nationalId=''):
     """
     collection = db['recommendations']
     user_field = collection.find({"nationalId":nationalId})['fieldOfStudy'] if nationalId else ''
-    
-    users = collection.find({"nationalId": {"$in": get_all_available_IDs(db)}, "fieldOfStudy":user_field}) if user_field else collection.find({"nationalId": {"$in": get_all_available_IDs(db)}})
+    users = collection.find({"fieldOfStudy":user_field}) if user_field else collection
+    users = users.find({"nationalId": {"$in": get_all_available_IDs(db)}})
     IDs, contents = [], []
 
     for user in users:
