@@ -19,21 +19,19 @@ def get_all_available_IDs(db):
         NIDs.append(user['nationalId'])
     return NIDs
 
-def get_all_content_for_available_users(db, nationalId=''):
+def get_all_content_for_available_users(db):
     """
         find all content for available users in recommendations collection
 
         Return
         IDs, contents -> id and content for all users
     """
+    # find all of users
     collection = db['recommendations']
-    user_field = collection.find({"nationalId":nationalId})['fieldOfStudy'] if nationalId else ''
-    users = collection.find({"fieldOfStudy":user_field}) if user_field else collection
-    users = users.find({"nationalId": {"$in": get_all_available_IDs(db)}})
+    users = collection.find({"nationalId": {"$in": get_all_available_IDs(db)}})
     IDs, contents = [], []
 
     for user in users:
         IDs.append(user['nationalId'])
         contents.append(' '.join([ user['fieldOfStudy'], user['specialization'], ''.join((content['skillName']+' ')*content['skillRate'] for content in user['userSkills']) ]))
     return IDs, contents
-
