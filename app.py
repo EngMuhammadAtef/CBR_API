@@ -3,7 +3,7 @@ from flask import Flask, jsonify, request
 from flask_apscheduler import APScheduler
 
 from models.OCR_script import get_nationalId
-from recommendation_systems.CBR import get_recomendation, Update_All_Recommendations
+from recommendation_systems.hybrid_model import get_recomendation, Update_All_Recommendations
 from config.connection import connect_to_db
 
 

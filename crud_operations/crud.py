@@ -37,12 +37,15 @@ def get_all_available_IDs(db):
         print(f"An error occurred in get_all_available_IDs: {e}")
         return []
 
-def get_all_content_for_available_users(db):
+def get_all_content(db):
     """
         find all content for available users in recommendations collection
 
+        Parameters
+            db -> connection of database
+
         Return
-        IDs, contents -> id and content for all users
+            IDs, contents -> id and content for all users
     """
     try:
         # Find all users with available IDs
@@ -58,5 +61,5 @@ def get_all_content_for_available_users(db):
         return IDs, contents
     
     except Exception as e:
-        print(f"An error occurred in get_all_content_for_available_users: {e}")
+        print(f"An error occurred in get_all_content(): {e}")
         return [], []
