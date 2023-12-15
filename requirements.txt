@@ -7,5 +7,3 @@ scikit-learn
 tensorflow
 pytesseract
 opencv-python
-tensorrt
-tensorflow_recommenders
