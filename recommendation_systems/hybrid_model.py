@@ -5,6 +5,16 @@ import sys
 sys.path.append("..") # Adds higher directory to python modules path.
 
 def get_recomendation(db, nationalId: str):
+    """
+        recommend partners by hybrid model through merged-two-models [content-based recommender - collaborative filtering]
+
+        Parameters
+            db -> DataBase
+            nationalId [str] -> nationalId of existing user to get recomendations
+
+        return users_nationalIDs, predicted_ratings
+    """
+
     # get the First 20 Best Partner by content-based-recommender system
     cbr_users, cbr_scores = get_recomendation_CBR(db, nationalId, 20)
 

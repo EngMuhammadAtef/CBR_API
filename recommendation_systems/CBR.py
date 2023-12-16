@@ -1,19 +1,17 @@
 # importing libraries
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import linear_kernel # cosine_similarity [same but slower method] # k(x,y) = xT.y <TfidfVectorizer returns normalized victors> 
+from sklearn.metrics.pairwise import linear_kernel # cosine_similarity [same but slower method] <TfidfVectorizer returns normalized victors> 
 from crud_operations import crud
 import sys
 sys.path.append("..") # Adds higher directory to python modules path.
 
 def get_recomendation_CBR(db, nationalId: str, n_of_recomendation):
     """
-        recommend me users with computing similarity scores between my content and other users' content
+        recommend partners by computing similarity scores between user's content and partner's content
 
         Parameters
-        db -> DataBase
-        nationalId [str] -> nationalId of existing user to get content and compute similarity scores to users_content
-
-        NIDs, bag_of_content -> getting IDs and all content of users
+            db -> DataBase
+            nationalId [str] -> nationalId of existing user to get content and compute similarity scores to users_content
 
         return users_nationalIDs, users_scores           [first n user' IDs and scores that similar to me]
     """
@@ -28,15 +26,15 @@ def get_recomendation_CBR(db, nationalId: str, n_of_recomendation):
     cosine_sim = {id:cos for id, cos in zip(NIDs, cosine_sim)}
 
     # Get the pairwsie similarity scores of all users_content with that content
-    sim_scores = list(zip(NIDs, cosine_sim[nationalId])) # [[1, 0.44], [2, 0.52], ...]
+    sim_scores = list(zip(NIDs, cosine_sim[nationalId]))
 
-    # Sort first 10 based on similarity scores [DESC]
-    for i in range(n_of_recomendation+1): # number of recommendation users[10]
+    # Sort first n_of_recomendation based on similarity scores [DESC]
+    for i in range(n_of_recomendation+1):
         for j in range(len(sim_scores)-1, i, -1):
             if sim_scores[j][1]>sim_scores[j-1][1]:
                 sim_scores[j], sim_scores[j-1] = sim_scores[j-1], sim_scores[j]
     
-    # Get the scores of the 10 most similar content
+    # Get scores of the most similar content
     sim_scores = [ elm for elm in sim_scores[:n_of_recomendation+1] if elm[0] != nationalId ]
 
     # Get the users indices and scores

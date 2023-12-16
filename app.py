@@ -2,10 +2,9 @@
 from flask import Flask, jsonify, request
 from flask_apscheduler import APScheduler
 
-from models.OCR_script import get_nationalId
+from scripts import OCR_script
 from recommendation_systems.hybrid_model import get_recomendation, Update_All_Recommendations
 from config.connection import connect_to_db
-
 
 # inial flask object
 app = Flask(__name__)
@@ -13,12 +12,11 @@ app = Flask(__name__)
 # connect to database
 db = connect_to_db()
 
-
-# get recomendation API
+# get recomendations API
 @app.route('/nationalId=<nationalId>')
 def home(nationalId):
     try:
-        # get content-based recomendation for user content and other users' content
+        # get recomendations partners for user with hybrid-model
         users_nationalIDs, users_scores = get_recomendation(db, str(nationalId))
         
         # format IDs and Scores for API Server
@@ -29,7 +27,6 @@ def home(nationalId):
     
     except Exception as e:
         return jsonify({"error":str(e)})
-
 
 # extract nationalId API
 @app.route('/extract_nationalId', methods=['POST'])
@@ -46,7 +43,7 @@ def extract_nationalId():
             return jsonify({'status':False,'message': 'image is required'}), 400
 
         # extract nationalId from image
-        nationalId = get_nationalId(file)
+        nationalId = OCR_script.get_nationalId(file)
         if len(nationalId)>=10:
             return jsonify({'status':True, 'nationalId': nationalId})
         
