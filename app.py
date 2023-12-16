@@ -15,7 +15,7 @@ db = connect_to_db()
 
 
 # get recomendation API
-@app.route('/nationalId=<nationalId>') 
+@app.route('/nationalId=<nationalId>')
 def home(nationalId):
     try:
         # get content-based recomendation for user content and other users' content

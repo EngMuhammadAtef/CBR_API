@@ -4,6 +4,6 @@ Flask-APScheduler
 numpy
 pymongo
 scikit-learn
-tensorflow
 pytesseract
 opencv-python
+tensorflow

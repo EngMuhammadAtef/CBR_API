@@ -8,7 +8,7 @@ def get_recomendation_ncf(nationalId: str, NIDs: list, n_of_recomendation: int):
 
     # predicted ratings from model
     predicted_ratings = ncf_model({"nationalId": [nationalId]*len(NIDs), "partnerId":  NIDs}).numpy().reshape(len(NIDs),)
-    predicted_ratings = [round(rating, 2) for rating in predicted_ratings]
+    predicted_ratings = [round(rating) for rating in predicted_ratings]
     
     # merge IDs with Ratings
     users_ratings = list(zip(NIDs, predicted_ratings))
