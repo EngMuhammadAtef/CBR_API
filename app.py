@@ -1,5 +1,6 @@
 # importing libraries
 from flask import Flask, jsonify, request
+from flask_cors import CORS
 from flask_apscheduler import APScheduler
 
 from scripts import OCR_script
@@ -8,7 +9,7 @@ from config.connection import connect_to_db
 
 # inial flask object
 app = Flask(__name__)
-
+CORS(app)
 # connect to database
 db = connect_to_db()
 
