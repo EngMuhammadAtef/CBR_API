@@ -12,7 +12,7 @@ app = Flask(__name__)
 CORS(app)
 # connect to database
 # db = connect_to_db()
-db = pd.read_csv('users_contents.csv', index_col=0)
+db = pd.read_csv('users_contents.csv', index_col=0)[:50]
 
 # get recomendations API
 @app.route('/nationalId=<nationalId>')
