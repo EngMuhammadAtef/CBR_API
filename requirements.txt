@@ -8,3 +8,4 @@ scikit-learn
 pytesseract
 opencv-python
 tensorflow
+pandas
