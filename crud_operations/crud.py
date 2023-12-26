@@ -1,5 +1,4 @@
 RECO_COLLECTION = 'recommendations'
-USERS_COLLECTION = 'users'
 
 def Update_Recom_List(db, nationalId:str, IDs_list: list, Scores_list: list):
     """
@@ -22,24 +21,9 @@ def Update_Recom_List(db, nationalId:str, IDs_list: list, Scores_list: list):
     except Exception as e:
         print(f"An error occurred in Update_Recom_List: {e}")
 
-def get_all_available_IDs(db):
-    try:
-        # get users collection
-        users_cols = db[USERS_COLLECTION]
-        
-        # get all users have not partners
-        Available_users = users_cols.find({"isAvailable":True})
-
-        # get nationalId of these users
-        return [user['nationalId'] for user in Available_users]
-    
-    except Exception as e:
-        print(f"An error occurred in get_all_available_IDs: {e}")
-        return []
-
 def get_all_content(db):
     """
-        find all content for available users in recommendations collection
+        find all content in recommendations collection
 
         Parameters
             db -> connection of database
@@ -48,16 +32,25 @@ def get_all_content(db):
             IDs, contents -> id and content for all users
     """
     try:
-        # Find all users with available IDs
-        available_ids = get_all_available_IDs(db)
+        def concatenate_skills(user_skills):
+            return {
+                "$reduce": {
+                    "input": user_skills,
+                    "initialValue": "",
+                    "in": {"$concat": ["$$value", " ", "$$this.skillName"]}
+                }
+            }
+
+        # Find all users
         rec_cols = db[RECO_COLLECTION]
 
         # get all nationalIds and contents of available users
-        users = rec_cols.find({"nationalId": {"$in": available_ids}})
+        users = [*rec_cols.aggregate([{"$project": {"_id": 0, "nationalId": 1, "bag_of_content": {"$concat": ['$fieldOfStudy', ' ', '$specialization', ' ', concatenate_skills("$userSkills")]}} }])]
+        
         IDs, contents = [], []
         for user in users:
             IDs.append(user['nationalId'])
-            contents.append(f"{user['fieldOfStudy']} {user['specialization']} {''.join((content['skillName'] + ' ') * content['skillRate'] for content in user['userSkills'])}")
+            contents.append(user['bag_of_content'])
         return IDs, contents
     
     except Exception as e:
