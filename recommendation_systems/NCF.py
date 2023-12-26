@@ -16,7 +16,7 @@ def get_recomendation_ncf(nationalId: str, NIDs: list, n_of_recomendation: int):
     """
 
     # load Neural-Collaborative-Filtering model
-    ncf_model = tf.saved_model.load("/recommendation_systems/model")
+    ncf_model = tf.saved_model.load("./recommendation_systems/model")
 
     # predicted ratings from model
     predicted_ratings = ncf_model({"nationalId": [nationalId]*len(NIDs), "partnerId":  NIDs}).numpy().reshape(len(NIDs),)
