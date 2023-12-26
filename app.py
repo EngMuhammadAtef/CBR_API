@@ -14,9 +14,13 @@ CORS(app)
 db = connect_to_db()
 
 # get recomendations API
-@app.route('/nationalId=<nationalId>')
-def home(nationalId):
+@app.route('/predict', methods=['POST'])
+def home():
     try:
+        # Get input data from the request
+        data = request.get_json()
+        nationalId = data["nationalId"]
+
         # get recomendations partners for user with hybrid-model
         users_nationalIDs, users_scores = get_recomendation(db, str(nationalId))
         
