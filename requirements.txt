@@ -7,4 +7,3 @@ pymongo
 scikit-learn
 pytesseract
 opencv-python
-tensorflow
