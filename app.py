@@ -5,13 +5,14 @@ from flask_apscheduler import APScheduler
 
 from scripts import OCR_script
 from recommendation_systems.hybrid_model import get_recomendation, Update_All_Recommendations
-from config.connection import connect_to_db
-
+# from config.connection import connect_to_db
+import pandas as pd
 # inial flask object
 app = Flask(__name__)
 CORS(app)
 # connect to database
-db = connect_to_db()
+# db = connect_to_db()
+db = pd.read_csv('users_contents.csv', index_col=0)
 
 # get recomendations API
 @app.route('/nationalId=<nationalId>')

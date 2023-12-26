@@ -22,7 +22,7 @@ def get_recomendation(db, nationalId: str):
     users_nationalIDs, predicted_ratings = get_recomendation_ncf(nationalId, cbr_users, 10)
 
     # save recommendations in database
-    crud.Update_Recom_List(db, nationalId, users_nationalIDs, predicted_ratings)
+    # crud.Update_Recom_List(db, nationalId, users_nationalIDs, predicted_ratings)
 
     # Return first n users idx and predicted_ratings
     return users_nationalIDs, predicted_ratings

@@ -17,7 +17,7 @@ def get_recomendation_CBR(db, nationalId: str, n_of_recomendation):
     """
 
     # get all national IDs & content of all available users
-    NIDs, bag_of_content = crud.get_all_content(db)
+    NIDs, bag_of_content = db['nationalId'].astype(str).to_list(), db['Bag_of_content'].to_list() # crud.get_all_content(db)
 
     # compute similarity between new content and users_content
     tfidf = TfidfVectorizer()
