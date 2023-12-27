@@ -9,23 +9,27 @@ def get_recomendation(db, nationalId: str):
         recommend partners by hybrid model through merged-two-models [content-based recommender - collaborative filtering]
 
         Parameters
-            db -> DataBase
+            db [con obj] -> DataBase
             nationalId [str] -> nationalId of existing user to get recomendations
 
-        return users_nationalIDs, predicted_ratings
+        return first n users IDs(keys) and scores(values) -> final_IDs_scores[dict]
     """
 
     # get the First 20 Best Partner by content-based-recommender system
-    cbr_users, cbr_scores = get_recomendation_CBR(db, nationalId, 20)
+    IDs_scores = get_recomendation_CBR(db, nationalId, 20)
 
-    # get the First 10 Best Partner by hybrid-recommender system
-    users_nationalIDs, predicted_ratings = get_recomendation_ncf(nationalId, cbr_users, 10)
+    # get IDs from content-based recommendations to fit to collaborative filtering [hybrid-recommender system]
+    IDs_ratings = get_recomendation_ncf(nationalId, list(IDs_scores.keys()), 10) 
 
+    # combine CBR_score and NCF_rate to get IDs and average scores
+    final_IDs_scores = {ID:round((rate+IDs_scores[ID])/2, 3) for ID, rate in IDs_ratings.items()}
+    final_IDs_scores = dict(sorted(final_IDs_scores.items(), key=lambda item: item[1], reverse=True))
+    
     # save recommendations in database
-    # crud.Update_Recom_List(db, nationalId, users_nationalIDs, predicted_ratings)
+    crud.Update_Recom_List(db, nationalId, final_IDs_scores)
 
-    # Return first n users idx and predicted_ratings
-    return users_nationalIDs, predicted_ratings
+    # Return first n users IDs and scores
+    return final_IDs_scores
 
 def Update_All_Recommendations(db):
     # get all nationalIds of users

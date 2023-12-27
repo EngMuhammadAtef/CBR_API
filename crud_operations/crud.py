@@ -1,20 +1,19 @@
 RECO_COLLECTION = 'recommendations'
 
-def Update_Recom_List(db, nationalId:str, IDs_list: list, Scores_list: list):
+def Update_Recom_List(db, nationalId:str, IDs_Scores: dict):
     """
         insert recommendation list for user
 
         Parameters
             nationalId -> nationalId of user that you want to update his content
-            IDs_list: list -> list of recommended users' IDs list
-            Scores_list: list -> list of recommended users' Scores list
+            IDs_Scores[dict] -> users' IDs and users' Scores
     """
     try:
         # get recommendations collection
         rec_cols = db[RECO_COLLECTION]
         
         # Create a list of recommendations
-        recommendations = [{'nationalId': ID, 'score': score} for ID, score in zip(IDs_list, Scores_list)]
+        recommendations = [{'nationalId': ID, 'score': score} for ID, score in IDs_Scores.items()]
 
         # update recommendations for user nationalId
         response = rec_cols.update_one( {'nationalId': nationalId}, {'$set': {'userRecommendations':recommendations}})
@@ -26,26 +25,17 @@ def get_all_content(db):
         find all content in recommendations collection
 
         Parameters
-            db -> connection of database
+            db[con object] -> connection of database
 
         Return
             IDs, contents -> id and content for all users
     """
     try:
-        def concatenate_skills(user_skills):
-            return {
-                "$reduce": {
-                    "input": user_skills,
-                    "initialValue": "",
-                    "in": {"$concat": ["$$value", " ", "$$this.skillName"]}
-                }
-            }
-
         # Find all users
         rec_cols = db[RECO_COLLECTION]
 
-        # get all nationalIds and contents of available users
-        users = [*rec_cols.aggregate([{"$project": {"_id": 0, "nationalId": 1, "bag_of_content": {"$concat": ['$fieldOfStudy', ' ', '$specialization', ' ', concatenate_skills("$userSkills")]}} }])]
+        # get all nationalIds and contents
+        users = [*rec_cols.aggregate([{"$project": {"_id": 0, "nationalId": 1, "bag_of_content": {"$concat": ['$fieldOfStudy', ' ', '$specialization', ' ', {"$reduce": {"input": "$userSkills", "initialValue": "", "in": {"$concat": ["$$value", " ", "$$this.skillName"]}}}]}}}])]
         
         IDs, contents = [], []
         for user in users:

@@ -3,7 +3,6 @@ import cv2
 import numpy as np
 from pytesseract import image_to_string
 import os
-
 os.environ['TESSDATA_PREFIX'] = r'/app/models'
 
 # config settings
@@ -12,8 +11,7 @@ RESIZE_HEIGHT = 512
 CONFIG = '--psm 7'
 LANG = 'ara_number'
 
-
-def get_nationalId(file):
+def extract_nationalId(file):
     """
         Extracts a 14-digit national ID from the input image file.
 
@@ -39,7 +37,6 @@ def get_nationalId(file):
     nationalId = ''.join(n for n in string if n.isdigit())
 
     return nationalId[:14]
-
 
 # testing post request with commends 
 # curl -X POST -F "file=@\"D:\WORK Space\GRADAUTION PROJECT\Extracting User Info From National ID\dataset\0.JPG\"" http://localhost:5000/extract_nationalId
