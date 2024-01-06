@@ -39,4 +39,4 @@ def extract_nationalId(file):
     return nationalId[:14]
 
 # testing post request with commends 
-# curl -X POST -F "file=@\"D:\WORK Space\GRADAUTION PROJECT\Extracting User Info From National ID\dataset\0.JPG\"" http://localhost:5000/extract_nationalId
+# curl -X POST -F "file=@\"D:\WORK Space\Tutorials\Extracting User Info From National ID\dataset\0.JPG\"" http://localhost:5000/extract_nationalId

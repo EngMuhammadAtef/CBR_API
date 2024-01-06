@@ -1,42 +1,42 @@
 from recommendation_systems.CBR import get_recomendation_CBR
 from recommendation_systems.NCF import get_recomendation_ncf
-from crud_operations import crud
 import sys
-sys.path.append("..") # Adds higher directory to python modules path.
+sys.path.append("..")
 
-def get_recomendation(db, nationalId: str):
+def get_recomendation(content_data:dict, nationalId: str, n_of_recomendation:int = 10):
     """
         recommend partners by hybrid model through merged-two-models [content-based recommender - collaborative filtering]
 
         Parameters
-            db [con obj] -> DataBase
+            content_data [dict] -> content_data of all users {Nid : content}
             nationalId [str] -> nationalId of existing user to get recomendations
+            n_of_recomendation[int] -> number of recommendation partners
 
-        return first n users IDs(keys) and scores(values) -> final_IDs_scores[dict]
+        return final_recommendations[dict] -> the best n_of_recomendation partners IDs(keys) and scores(values)
     """
 
     # get the First 20 Best Partner by content-based-recommender system
-    IDs_scores = get_recomendation_CBR(db, nationalId, 20)
+    CBR_IDs_scores = get_recomendation_CBR(content_data, nationalId, n_of_recomendation*2)
 
     # get IDs from content-based recommendations to fit to collaborative filtering [hybrid-recommender system]
-    IDs_ratings = get_recomendation_ncf(nationalId, list(IDs_scores.keys()), 10) 
+    NCF_IDs_ratings = get_recomendation_ncf(nationalId, list(CBR_IDs_scores.keys()), n_of_recomendation) 
 
-    # combine CBR_score and NCF_rate to get IDs and average scores
-    final_IDs_scores = {ID:round((rate+IDs_scores[ID])/2, 3) for ID, rate in IDs_ratings.items()}
-    final_IDs_scores = dict(sorted(final_IDs_scores.items(), key=lambda item: item[1], reverse=True))
+    # combine CBR_score and NCF_rate to get IDs and scores
+    final_recommendations = {ID:round((rate/5+CBR_IDs_scores[ID]), 2) if round((rate/5+CBR_IDs_scores[ID]), 2)<1 else 1 for ID, rate in NCF_IDs_ratings.items()}
+    final_recommendations = dict(sorted(final_recommendations.items(), key=lambda item: item[1], reverse=True))
     
-    # save recommendations in database
-    crud.Update_Recom_List(db, nationalId, final_IDs_scores)
+    # Return the best n_of_recomendation partners
+    return final_recommendations
 
-    # Return first n users IDs and scores
-    return final_IDs_scores
-
-def Update_All_Recommendations(db):
+def Update_All_Recommendations(content_data: dict):
+    """
+        recommend partners for all users by hybrid model (cron-job for a specific period)
+    """
     # get all nationalIds of users
-    NIDs, _ = crud.get_all_content(db)
+    NIDs = content_data.keys()
 
     # get recomendation for each user and update in db
     for nationalId in NIDs:
-        get_recomendation(db, nationalId)
+        get_recomendation(content_data, nationalId)
     
     print("Updated All Recommendation lists Successfully")

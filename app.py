@@ -1,31 +1,41 @@
-# importing libraries
+# importing flask App
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from flask_apscheduler import APScheduler
-# importing models
-from scripts import OCR_script
+# import database connection
+from config.connection import connect_to_sql, connect_to_mongo
+from crud_operations import crud
+from pipeline import ETL
+# import ML models
 from recommendation_systems.hybrid_model import get_recomendation, Update_All_Recommendations
-from config.connection import connect_to_db
+from scripts import OCR_script
 
 # inial flask object
 app = Flask(__name__)
 CORS(app)
 
 # connect to database
-db = connect_to_db()
+sql_conn = connect_to_sql()
+mongo_con = connect_to_mongo()
 
 # get recommendations API
 @app.route('/nationalId=<nationalId>')
-def recommendations(nationalId):
+def recommendations(nationalId: str):
     try:
-        # get recommended partners for a user with hybrid-model RS
-        IDs_scores = get_recomendation(db, str(nationalId))
+        # extract, transform and load the new user to warehouse
+        ETL.Extract_Transform_Load(mongo_con, nationalId, sql_conn)
         
-        # format IDs and Scores for API
-        res = []
+        # get all content for users
+        content_data = crud.get_all_content(sql_conn)
+
+        # get recommended partners for a user with hybrid-model RS
+        IDs_scores = get_recomendation(content_data, nationalId)
+        
+        # format IDs and Scores for JSON
+        recommendations_list = []
         for (id, score) in IDs_scores.items():
-            res.append({'nationalId': id, 'score': score})
-        return jsonify(res)
+            recommendations_list.append({'nationalId': id, 'score': score})
+        return jsonify(recommendations_list)
     
     except Exception as e:
         return jsonify({"error":str(e)})
@@ -57,9 +67,8 @@ def get_nationalId():
 if __name__ == '__main__':
     # Update All Recommendations Job every 7 days
     scheduler = APScheduler()
-    scheduler.add_job(id='Job 1', name='Update All Recommendations Job', func=lambda: Update_All_Recommendations(db), trigger='interval', days=7)
+    scheduler.add_job(id='Job 1', name='Update All Recommendations Job', func=lambda: Update_All_Recommendations(crud.get_all_content(sql_conn)), trigger='interval', days=7)
     scheduler.start()
 
     # run server
     app.run(debug = True, use_reloader=False)
-
