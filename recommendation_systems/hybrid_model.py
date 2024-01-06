@@ -22,7 +22,7 @@ def get_recomendation(content_data:dict, nationalId: str, n_of_recomendation:int
     NCF_IDs_ratings = get_recomendation_ncf(nationalId, list(CBR_IDs_scores.keys()), n_of_recomendation) 
 
     # combine CBR_score and NCF_rate to get IDs and scores
-    final_recommendations = {ID:round((rate/5+CBR_IDs_scores[ID]), 2) if round((rate/5+CBR_IDs_scores[ID]), 2)<1 else 1 for ID, rate in NCF_IDs_ratings.items()}
+    final_recommendations = {ID:round((rate/5+CBR_IDs_scores[ID])/2, 2) for ID, rate in NCF_IDs_ratings.items()}
     final_recommendations = dict(sorted(final_recommendations.items(), key=lambda item: item[1], reverse=True))
     
     # Return the best n_of_recomendation partners
