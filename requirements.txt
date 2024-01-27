@@ -2,10 +2,5 @@ gunicorn
 Flask
 Flask-Cors
 Flask-APScheduler
-pymongo
 psycopg2-binary
 numpy
-scikit-learn
-pytesseract
-opencv-python
-tensorflow

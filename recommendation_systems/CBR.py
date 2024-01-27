@@ -40,13 +40,13 @@ def cosine_jaccard(u1_c1: dict, u2_c2: dict):
     return jaccard_dis * cosine_similarity
 
 # get content-based recommender recommendations -- O(n_users * m_skills)
-def get_recomendation_CBR(content_data:dict, nationalId: str, n_of_recomendation:int):
+def get_recomendation_CBR(nationalId: str, content_data:dict, n_of_recomendation:int):
     """
         recommend partners by computing similarity scores & get the best n_of_recomendation
 
         Parameters
-            content_data[dict] -> content_data of all users {Nid : content}
             nationalId[str] -> nationalId of existing user to get content and compute similarity scores to users_content
+            content_data[dict] -> content_data of all users {Nid : content}
             n_of_recomendation[int] -> number of recommendation partners
 
         return IDs_score[dict] -> CBR Result
