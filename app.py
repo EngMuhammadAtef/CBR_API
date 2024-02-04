@@ -23,12 +23,12 @@ def recommendations(nationalId: str):
         content_data = crud.get_all_content(sql_conn)
 
         # get recommended partners for a user with hybrid-model RS
-        IDs_scores = get_recomendation(nationalId, content_data)
+        IDs_scores_Prate = get_recomendation(nationalId, content_data)
         
         # format IDs and Scores for JSON
         recommendations_list = []
-        for (id, score) in IDs_scores.items():
-            recommendations_list.append({'nationalId': id, 'score': score})
+        for (id, score, rate) in IDs_scores_Prate:
+            recommendations_list.append({'nationalId': id, 'score': score, 'predScore': rate})
         return jsonify(recommendations_list)
     
     except Exception as e:

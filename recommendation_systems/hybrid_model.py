@@ -14,7 +14,7 @@ def get_recomendation(nationalId: str, content_data:dict, n_of_recomendation:int
             content_data [dict] -> content_data of all users {Nid : content}
             n_of_recomendation[int] -> number of recommendation partners
 
-        return final_recommendations[dict] -> the best n_of_recomendation partners IDs(keys) and scores(values)
+        return final_recommendations[tuple] -> ID, Content_score, predicted_rating
     """
 
     # get the First N Best Partner by content-based-recommender system
@@ -23,9 +23,9 @@ def get_recomendation(nationalId: str, content_data:dict, n_of_recomendation:int
     # get IDs from content-based recommendations to fit to collaborative filtering
     CF_IDs_ratings = get_recomendation_cf(nationalId, list(CBR_IDs_scores.keys()), n_of_recomendation) 
 
-    # combine CBR_score and NCF_rate to get IDs and scores
-    final_recommendations = {ID:round((rate/5+CBR_IDs_scores[ID])/2, 2) for ID, rate in CF_IDs_ratings.items()}
-    final_recommendations = dict(sorted(final_recommendations.items(), key=lambda Fscore: Fscore[1], reverse=True))
+    # combine CBR_score and NCF_rate to get IDs & score & rate
+    final_recommendations = ((ID, round(CBR_IDs_scores[ID], 2), round(rate, 1)) for ID, rate in CF_IDs_ratings.items())
+    final_recommendations = sorted(final_recommendations, key=lambda recom: (recom[1]*0.8 + recom[2]/5*0.2), reverse=True) # weighted average 80% of CBR_score and 20% of normalized pred_rate
     
     # Return the best n_of_recomendation partners
     return final_recommendations
