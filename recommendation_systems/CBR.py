@@ -39,6 +39,18 @@ def cosine_jaccard(u1_c1: dict, u2_c2: dict):
 
     return jaccard_dis * cosine_similarity
 
+# preprocessing step
+def lower_text(user_cont: dict):
+    """
+    lower the text - preprocessing step
+
+    Parameters
+        user_cont[dict] -> content data of the user
+
+    return content_data[dict] after preprocessing
+    """
+    return {str(text).lower(): rate for text, rate in user_cont.items()}
+
 # get content-based recommender recommendations -- O(n_users * m_skills)
 def get_recomendation_CBR(nationalId: str, content_data:dict, n_of_recomendation:int):
     """
@@ -52,12 +64,12 @@ def get_recomendation_CBR(nationalId: str, content_data:dict, n_of_recomendation
         return IDs_score[dict] -> CBR Result
     """
     # get content of the user
-    u1_c1 = content_data[nationalId]
+    u1_c1 = lower_text(content_data[nationalId])
     IDs_scores = {}
 
     # get scores between user and all partners
     for nid in content_data.keys():
-        u2_c2 = content_data[nid]
+        u2_c2 = lower_text(content_data[nid])
         IDs_scores[nid] = cosine_jaccard(u1_c1, u2_c2) # score
 
     # get the best n_of_recomendation
