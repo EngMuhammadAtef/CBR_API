@@ -6,6 +6,7 @@ import re
 import sys
 sys.path.append("..")
 nltk.download('punkt')
+nltk.download('wordnet')
 
 # customized content analyzer
 def cosine_jaccard(u1_c1: dict, u2_c2: dict):
