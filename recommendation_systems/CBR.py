@@ -1,9 +1,11 @@
 # importing libraries
+import nltk
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 import re
 import sys
 sys.path.append("..")
+nltk.download('punkt')
 
 # customized content analyzer
 def cosine_jaccard(u1_c1: dict, u2_c2: dict):
