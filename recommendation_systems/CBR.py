@@ -1,4 +1,7 @@
 # importing libraries
+from nltk.tokenize import word_tokenize
+from nltk.stem import WordNetLemmatizer
+import re
 import sys
 sys.path.append("..")
 
@@ -40,16 +43,30 @@ def cosine_jaccard(u1_c1: dict, u2_c2: dict):
     return jaccard_dis * cosine_similarity
 
 # preprocessing step
-def lower_text(user_cont: dict):
+def clean_text(user_cont: dict):
     """
-    lower the text - preprocessing step
+    preprocessing step (Remove special characters - lowercase - Tokenization - Lemmatization - )
 
     Parameters
         user_cont[dict] -> content data of the user
 
     return content_data[dict] after preprocessing
     """
-    return {str(text).lower(): rate for text, rate in user_cont.items()}
+    new_user_cont = {}
+    for text, rate in user_cont.items():
+        # Remove special characters and punctuation
+        text = re.sub(r'[^a-zA-Z0-9\s]', '', text)
+        # Convert text to lowercase
+        text = text.lower()
+        # Tokenization
+        tokens = word_tokenize(text)
+        # Lemmatization
+        lemmatizer = WordNetLemmatizer()
+        tokens = [lemmatizer.lemmatize(word) for word in tokens]
+        # Join tokens back into text
+        clean_text = ' '.join(tokens)
+        new_user_cont[clean_text] = rate
+    return new_user_cont
 
 # get content-based recommender recommendations -- O(n_users * m_skills)
 def get_recomendation_CBR(nationalId: str, content_data:dict, n_of_recomendation:int):
@@ -64,12 +81,12 @@ def get_recomendation_CBR(nationalId: str, content_data:dict, n_of_recomendation
         return IDs_score[dict] -> CBR Result
     """
     # get content of the user
-    u1_c1 = lower_text(content_data[nationalId])
+    u1_c1 = clean_text(content_data[nationalId])
     IDs_scores = {}
 
     # get scores between user and all partners
     for nid in content_data.keys():
-        u2_c2 = lower_text(content_data[nid])
+        u2_c2 = clean_text(content_data[nid])
         IDs_scores[nid] = cosine_jaccard(u1_c1, u2_c2) # score
 
     # get the best n_of_recomendation
