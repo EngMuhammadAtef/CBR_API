@@ -5,4 +5,4 @@ Flask-APScheduler
 psycopg2-binary
 numpy
 nltk
-re
+regex
