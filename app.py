@@ -32,7 +32,7 @@ def recommendations(nationalId: str):
         return jsonify(recommendations_list)
     
     except Exception as e:
-        return jsonify([{"status":False, "error":e},]), 400
+        return jsonify([{"status":False, "error":str(e)}]), 400
 
 # run main file [app]
 if __name__ == '__main__':
